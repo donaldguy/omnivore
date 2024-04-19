@@ -121,14 +121,14 @@ export const contentFetchRequestHandler: RequestHandler = async (req, res) => {
   try {
     const fetchResult = await fetchContent(url, locale, timezone)
     const finalUrl = fetchResult.finalUrl
-    let contentHash: string | undefined
+    let urlHash: string | undefined
 
     const content = fetchResult.content
     if (content) {
       // hash content to use as key
-      contentHash = hash(content)
-      await uploadToBucket(contentHash, content)
-      console.log('content uploaded to bucket', contentHash)
+      urlHash = hash(finalUrl)
+      await uploadToBucket(urlHash, content)
+      console.log('content uploaded to bucket', urlHash)
     }
 
     const savePageJobs = users.map((user) => ({
@@ -148,7 +148,7 @@ export const contentFetchRequestHandler: RequestHandler = async (req, res) => {
         taskId,
         title: fetchResult.title,
         contentType: fetchResult.contentType,
-        contentHash,
+        urlHash,
       },
       isRss: !!rssFeedUrl,
       isImport: !!taskId,
